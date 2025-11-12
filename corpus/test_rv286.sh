@@ -1,9 +1,12 @@
 #!/bin/bash
 # Test RV32I corpus with rv286 recompiler
+# Note: rv286 only supports RV32I, so this script only tests RV32I binaries
+# Other ISA variants (RV32IM, RV32IMA, RV64I, etc.) are not tested with rv286
 
 set -e
 
 echo "=== Testing RV32I Corpus with rv286 ==="
+echo "Note: Only testing RV32I (rv286 does not support other ISA variants)"
 echo ""
 
 # Colors for output

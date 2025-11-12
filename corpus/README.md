@@ -47,6 +47,18 @@ All tests are compiled using LLVM/Clang toolchain and include verbatim citations
   - Array sum
   - Demonstrates real-world instruction combinations
 
+- **06_nop_and_hints.s**: Tests NOP and hint instructions
+  - NOP instruction behavior
+  - Hint instructions (encoded as operations to x0)
+  - Zero register hardwired behavior
+  - Verification that NOPs don't affect state
+
+- **07_pseudo_instructions.s**: Tests pseudo-instructions
+  - Common pseudo-instructions (MV, NOT, NEG, SEQZ, SNEZ, etc.)
+  - Branch pseudo-instructions (BEQZ, BNEZ, BLEZ, BGEZ, etc.)
+  - Jump pseudo-instructions (J, JR, RET, CALL)
+  - Load address (LA)
+
 ### RV32IM Tests (corpus/rv32im/)
 - **01_multiply_divide.s**: Tests M extension instructions
   - Multiplication operations (MUL, MULH, MULHU, MULHSU)
@@ -68,6 +80,13 @@ All tests are compiled using LLVM/Clang toolchain and include verbatim citations
   - Word operations (ADDIW, SLLIW, SRLIW, SRAIW, ADDW, SUBW, SLLW, SRLW, SRAW)
   - 64-bit loads and stores (LD, SD, LWU)
   - Sign extension behavior in 64-bit mode
+
+### RV64IM Tests (corpus/rv64im/)
+- **01_multiply_divide_64.s**: Tests 64-bit M extension instructions
+  - 64-bit multiplication operations (MUL, MULH, MULHU, MULHSU)
+  - 64-bit division operations (DIV, DIVU, REM, REMU)
+  - Word operations (MULW, DIVW, DIVUW, REMW, REMUW)
+  - Overflow and division by zero in 64-bit mode
 
 ## Compilation
 
@@ -100,21 +119,19 @@ clang --target=riscv64 -march=rv64i -mabi=lp64 -nostdlib -static \
 
 ## Testing with rv286
 
-The rv286 recompiler currently supports RV32I. To test the RV32I corpus:
+The rv286 recompiler currently supports **RV32I only**. The corpus includes tests for other ISA variants (RV32IM, RV32IMA, RV64I, RV64IM, RV64IMA) which can be used to test other RiscV tools, but these are not compatible with rv286.
+
+To test the RV32I corpus with rv286:
 
 ```bash
-# From the repository root
-for test in corpus/rv32i/0*; do
-    if [ -f "$test" ] && [ ! "${test%.s}" = "$test" ]; then
-        continue  # Skip .s files
-    fi
-    echo "Testing $test"
-    python rv286.py "$test" > /tmp/test.asm
-    nasm -f elf32 /tmp/test.asm -o /tmp/test.o
-    ld -melf_i386 /tmp/test.o -o /tmp/test.x86
-    # Run and compare output
-done
+# Automated testing
+./corpus/test_rv286.sh
+
+# Manual testing of individual tests
+./rv286.sh corpus/rv32i/01_integer_computational corpus/rv32i/01_integer_computational.x86
 ```
+
+The test script automatically tests all RV32I binaries and reports success/failure.
 
 ## Specification References
 
@@ -128,21 +145,31 @@ Each instruction test is documented with relevant specification quotes to ensure
 
 ## Test Status
 
-| ISA Variant | Tests | Status | rv286 Support |
-|-------------|-------|--------|---------------|
-| RV32I       | 5     | ✓      | ✓             |
-| RV32IM      | 1     | ✓      | ✗             |
-| RV32IMA     | 1     | ✓      | ✗             |
-| RV64I       | 1     | ✓      | ✗             |
-| RV64IM      | 0     | -      | ✗             |
-| RV64IMA     | 0     | -      | ✗             |
+| ISA Variant | Tests | Compilation | rv286 Support |
+|-------------|-------|-------------|---------------|
+| RV32I       | 7     | ✓           | ✓             |
+| RV32IM      | 1     | ✓           | ✗             |
+| RV32IMA     | 1     | ✓           | ✗             |
+| RV64I       | 1     | ✓           | ✗             |
+| RV64IM      | 1     | ✓           | ✗             |
+| RV64IMA     | 0     | -           | ✗             |
 
-## Known Issues
+**Note**: rv286 currently only supports RV32I. The other ISA variants (RV32IM, RV32IMA, RV64I, RV64IM, RV64IMA) are included in the corpus for completeness and testing other RiscV tools, but are not compatible with rv286.
 
-When testing with rv286, any failures will be documented here:
+## Known Issues and Test Results
 
-### Test Results
-(To be filled in after running tests)
+### rv286 Test Results (RV32I only)
+
+All 7 RV32I tests successfully recompile with rv286:
+- ✓ 01_integer_computational.s
+- ✓ 02_control_transfer.s
+- ✓ 03_load_store.s
+- ✓ 04_edge_cases.s
+- ✓ 05_simple_program.s
+- ✓ 06_nop_and_hints.s
+- ✓ 07_pseudo_instructions.s
+
+**Note**: Tests for other ISA variants (RV32IM, RV32IMA, RV64I, RV64IM, RV64IMA) are not tested with rv286 as it only supports RV32I. These tests are provided for testing other RiscV compilers and emulators.
 
 ## Future Work
 

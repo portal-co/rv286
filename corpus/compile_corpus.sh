@@ -87,11 +87,42 @@ for test in corpus/rv64i/*.s; do
 done
 echo "RV64I: $rv64_success/$rv64_total tests compiled successfully"
 
+# Compile RV64IM tests
+echo ""
+echo "=== Compiling RV64IM Tests ==="
+rv64im_success=0
+rv64im_total=0
+for test in corpus/rv64im/*.s; do
+    rv64im_total=$((rv64im_total + 1))
+    if compile_test "$test" "rv64im" "lp64"; then
+        rv64im_success=$((rv64im_success + 1))
+    fi
+done
+echo "RV64IM: $rv64im_success/$rv64im_total tests compiled successfully"
+
+# Compile RV64IMA tests
+echo ""
+echo "=== Compiling RV64IMA Tests ==="
+rv64ima_success=0
+rv64ima_total=0
+if [ -d corpus/rv64ima ] && [ "$(ls -A corpus/rv64ima/*.s 2>/dev/null)" ]; then
+    for test in corpus/rv64ima/*.s; do
+        [ -f "$test" ] || continue
+        rv64ima_total=$((rv64ima_total + 1))
+        if compile_test "$test" "rv64ima" "lp64"; then
+            rv64ima_success=$((rv64ima_success + 1))
+        fi
+    done
+    echo "RV64IMA: $rv64ima_success/$rv64ima_total tests compiled successfully"
+else
+    echo "RV64IMA: No tests found (directory empty or doesn't exist)"
+fi
+
 # Summary
 echo ""
 echo "=== Compilation Summary ==="
-total_success=$((success + im_success + ima_success + rv64_success))
-total_tests=$((total + im_total + ima_total + rv64_total))
+total_success=$((success + im_success + ima_success + rv64_success + rv64im_success + rv64ima_success))
+total_tests=$((total + im_total + ima_total + rv64_total + rv64im_total + rv64ima_total))
 echo "Total: $total_success/$total_tests tests compiled successfully"
 
 if [ $total_success -eq $total_tests ]; then
