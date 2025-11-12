@@ -1,0 +1,4 @@
+[submodule "corpus"]
+	path = corpus
+	url = https://github.com/portal-co/rv-corpus.git
+	branch = main
