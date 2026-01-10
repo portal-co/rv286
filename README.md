@@ -1,14 +1,14 @@
 # rv286
 
-rv286 is a quick and dirty static recompiler from RISC-V (strictly RV32I) to
-x86 (32-bit). At its current stage it can recompile small and regular C
-programs though this is not guaranteed.
+## Description
+Static recompiler from RISC-V (RV32I) to x86 (32-bit) ("rv286"). Aimed at running simple RISC-V binaries on x86 hardware.
 
 ## Goals
-- [ ] Add project goals
+- [ ] Recompile RV32I to x86
+- [ ] Support basic syscalls
 
 ## Progress
-- [ ] Initial setup
+- [ ] Python-based prototype and assembly tests present
 
 ---
 *AI assisted*
